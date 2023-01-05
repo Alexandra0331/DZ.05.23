@@ -8,38 +8,26 @@ import processor as p
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
-
-# def get_cplx_keys():
-#     # Генератор клавиатуры для комплексных чисел - на будущее
-#     btn_sym = ['+', '1', '2', '3', 'j', '-', '4', '5', '6',
-#                '(', '*', '7', '8', '9', ')', '/','**', '.', '0', '=', 'Del', 'C']
-#     buttons = list(map(lambda x: types.InlineKeyboardButton(
-#         text=x, callback_data=x), btn_sym))  # Колбэк кнопки совпадает с ее маркировкой+j
-#     keyboard = types.InlineKeyboardMarkup(row_width=5)
-#     keyboard.add(*buttons[:-2])
-#     keyboard.add(buttons[-1], buttons[-2])
-#     return keyboard
-
 def get_keys():
     # Генератор клавиатуры.
     btn_sym = ['+', '1', '2', '3', '**', '-', '4', '5', '6',
                '//', '*', '7', '8', '9', '%', '/', '.', '0', '=', 'Del', 'C']
     buttons = list(map(lambda x: types.InlineKeyboardButton(
-        text=x, callback_data=x), btn_sym))  # Колбэк кнопки совпадает с ее маркировкой
+        text=x, callback_data=x), btn_sym))
     keyboard = types.InlineKeyboardMarkup(row_width=5)
     keyboard.add(*buttons[:-1])
     keyboard.add(buttons[-1])
     return keyboard
 
 
-@dp.message_handler(commands=["help", "hello", "calc"])
+@dp.message_handler(commands=["help", "hello", "calculator"]) #обработчик, который будет отправлять нам сообщение и наш шаблон
 async def cmd_numbers(message: types.Message):
     match message.text[1:]:
         case 'help':
-            await message.reply(f'Привет, {message.from_user.first_name}!\n/hello - поздороваться\n/help - вывод списка команд\n/calc - запуск калькулятора\n', reply=False)
+            await message.reply(f'Привет, {message.from_user.first_name}!\n/hello - приветствие\n/help - списка команд\n/calculator - запуск калькулятора\n', reply=False)
         case 'hello':
             await message.reply(f'Привет, {message.from_user.first_name}!', reply=False)
-        case 'calc':
+        case 'calculator':
             await message.answer("0", reply_markup=get_keys())
 
 
@@ -55,7 +43,7 @@ async def callbacks_num(call: types.CallbackQuery):
         return
     cur_value = call.message.text
     action = call.data
-    # обработка нажатия кнопок при уже посчитанном значении в строке вывода
+
     if cur_value.count('=') != 0:
         if action == 'C':
             out_val = '0'
@@ -81,12 +69,12 @@ async def callbacks_num(call: types.CallbackQuery):
             out_val = ps + ' = '+cs if len(ps.split()) > 1 else ps
             if cur_value != out_val:
                 p.write_log(p.t(), f'Вычисление: {out_val}')
-        case s if s in p.sep:   #'+' | '-' | '*' | '**' | '/' | '%' | '//':
+        case s if s in p.sep:   #sep = ('**', '*', '//', '/',  '%', '+', '-')
             if cur_value == '0':
                 out_val = '' if action == '-' else '0'
             else:
                 out_val = cur_value+' '+action
-        case '.':  # обработка второй точки в числе - не даем ставить если уже есть
+        case '.':
             if cur_value == '0':
                 out_val = '0.'
             else:
@@ -102,9 +90,9 @@ async def callbacks_num(call: types.CallbackQuery):
             else:
                 out_val = cur_value + action if cur_value == '-' else cur_value + ' ' + action
 
-    if out_val != cur_value: #если не поменялось - незачем и обновлять
+    if out_val != cur_value:
         await update_text(call.message, out_val)
-    # Не забываем отчитаться о получении колбэка - чтобы "часики не висели"
+    # отчет о получении колбэка
     await call.answer()
 
 if __name__ == '__main__':
