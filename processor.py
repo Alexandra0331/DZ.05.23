@@ -59,12 +59,8 @@ def calc(op, a, b):
 
 def prepare_string(string: str):
     global sep
-    # for s in sep: #расстановка пробелов после знаков-разделителей, убирание двойных пробелов, выравнивание скобок (на будущее)
-    #     string = string.replace(s, f' {s} ')
-    # string = ' '.join(string.split())
     str_l = string.split()
 
-    # подготовка строки к виду, пригодному для вычисления - прекращаем как только находим ошибку.
     valid_l = []
     digit_expected = True
     for i in range(len(str_l)):
@@ -119,7 +115,7 @@ def calc_string(string: str):  # вычисление по строке с со�
 def calc_substr(s: str, str_l: list):  # атомарное математическое вычисление на основе трех элементов списка
     while s in str_l:
         sep_idx = str_l.index(s)
-    # комплексные пока не работают - закладка на будущее
+
         a = float(str_l[sep_idx-1]) #if str_l[sep_idx-1].count('j') ==0 else complex(str_l[sep_idx-1])
         b = float(str_l[sep_idx+1]) #if str_l[sep_idx+1].count('j') ==0 else complex(str_l[sep_idx+1])
         op_res = calc(s, a, b)
@@ -133,9 +129,8 @@ def calc_substr(s: str, str_l: list):  # атомарное математиче
 
 
 def write_log(*params):
-    with open("calc.log", 'a', encoding='utf-8') as logfile:
+    with open("calculator.log", 'a', encoding='utf-8') as logfile:
         logfile.write('\t'.join(list(map(lambda x: str(x), params)))+'\n')
-
 
 if __name__ == '__main__':
     pass
