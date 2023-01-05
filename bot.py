@@ -24,7 +24,7 @@ def get_keys():
 async def cmd_numbers(message: types.Message):
     match message.text[1:]:
         case 'help':
-            await message.reply(f'Привет, {message.from_user.first_name}!\n/hello - приветствие\n/help - списка команд\n/calculator - запуск калькулятора\n', reply=False)
+            await message.reply(f'Привет, {message.from_user.first_name}!\n/hello - приветствие\n/help - список команд\n/calculator - запуск калькулятора\n', reply=False)
         case 'hello':
             await message.reply(f'Привет, {message.from_user.first_name}!', reply=False)
         case 'calculator':
